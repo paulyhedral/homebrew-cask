@@ -10,18 +10,13 @@ cask "parallels" do
 
   auto_updates true
   depends_on macos: ">= :sierra"
-  # This .dmg cannot be extracted normally
-  # Original discussion: https://github.com/Homebrew/homebrew-cask/pull/67202
-  container type: :naked
 
-  preflight do
-    system_command "/usr/bin/hdiutil",
-                   args: ["attach", "-nobrowse", "#{staged_path}/ParallelsDesktop-#{version}.dmg"]
-    system_command "/Volumes/Parallels Desktop #{version.major}/Parallels Desktop.app/Contents/MacOS/inittool",
-                   args: ["install", "-t", "#{appdir}/Parallels Desktop.app"],
+  app "Parallels Desktop.app"
+
+  postflight do
+    system_command "#{appdir}/Parallels Desktop.app/Contents/MacOS/inittool",
+                   args: ["init"],
                    sudo: true
-    system_command "/usr/bin/hdiutil",
-                   args: ["detach", "/Volumes/Parallels Desktop #{version.major}"]
   end
 
   uninstall_preflight do
@@ -36,12 +31,6 @@ cask "parallels" do
     "/usr/local/bin/prlctl",
     "/usr/local/bin/prlexec",
     "/usr/local/bin/prlsrvctl",
-    "/Applications/Parallels Desktop.app",
-    "/Applications/Parallels Desktop.app/Contents/Applications/Parallels Link.app",
-    "/Applications/Parallels Desktop.app/Contents/Applications/Parallels Mounter.app",
-    "/Applications/Parallels Desktop.app/Contents/Applications/Parallels Technical Data Reporter.app",
-    "/Applications/Parallels Desktop.app/Contents/MacOS/Parallels Service.app",
-    "/Applications/Parallels Desktop.app/Contents/MacOS/Parallels VM.app",
   ]
 
   zap trash: [
